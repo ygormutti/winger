@@ -21,17 +21,16 @@ This research document details the architecture and APIs necessary to build this
 2. Allow the user to unstash any stashed folder directly into a Tab Group in the currently active window, rather than opening a new window.
 3. This should be triggered by a new UI button in the panel and/or an omnibox command.
 
-### 1. Stashing a Group as a Folder
+### 1. Stashing a Window's Groups as Separate Folders
 
 **Current Behavior:**
-When a window is stashed, Winger creates a folder named after the window. The window's properties (like `{"private": true}`) are appended to the title. Each tab in the window becomes a bookmark. The tab's properties (including its `group` info) are appended to the bookmark's title.
+When a window is stashed, Winger creates a single bookmark folder named after the window. The window's properties (like `{"private": true}`) are appended to the title. Each tab in the window becomes a bookmark within this single folder. The tab's properties (including its `group` info) are appended to the bookmark's title.
 
 **Proposed Changes:**
-We can introduce a new action to stash just a *group* as a folder.
+Since Tab Groups are not yet surfaced as addressable rows in the UI, we cannot directly stash a *single* group. Instead, we introduce an experimental, opt-in setting (e.g., `stash_groups_as_folders`) that alters how *windows* are stashed.
 
-- **Stash Mechanics**: In `background/stash.stash.js`, we introduce a `stashGroup(groupId, name, remove)` function.
-- **Properties**: We extend `StashProp.Window` in `background/stash.prop.js` to also encode group properties into the folder title. Alternatively, we can create a new `StashProp.Group` specifically for this. The JSON annotation on the folder should look something like: `{"group": {"id": 1, "color": "blue", "title": "My Group"}}`.
-- **Bookmarks**: The tabs within that `groupId` are queried and saved as bookmarks inside this new folder.
+- **Stash Mechanics**: When stashing a window (`stashWindow` in `background/stash.stash.js`), if the setting is enabled, Winger will iterate through the tabs and identify distinct Tab Groups. For each group found, it will create a *separate*, top-level bookmark folder in the Stash Home, rather than nesting them all under one window folder. Ungrouped tabs can either go into a "misc" folder or be handled according to user preference.
+- **Properties**: We extend `StashProp.Window` in `background/stash.prop.js` (or create a new `StashProp.Group`) to encode group properties into the folder title for these group-specific folders. The JSON annotation on the folder should look something like: `{"group": {"id": 1, "color": "blue", "title": "My Group"}}`.
 
 ### 2. Unstashing a Folder as a Group
 
