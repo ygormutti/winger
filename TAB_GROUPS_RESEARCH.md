@@ -48,17 +48,20 @@ Right now, `unstashFolder` in `background/stash.unstash.js` reads a folder, crea
 
 An important consideration when moving from "Unstash to new window" to "Unstash here" is how the existing `unstashFolder` algorithm handles tab duplication and group collisions in the active window.
 
+*(Note: Handling these edge cases is a non-goal for the MVP. This section is purely informational.)*
+
 **Current Unstash Algorithm Behavior:**
 - **Tab Identity:** Winger does not currently check for "identity" (e.g., matching URLs or existing tabs) when unstashing. It blindly iterates through the folder's bookmarks and creates a *new tab* for each bookmark via `browser.tabs.create`. Thus, if the active window already has a tab open with the same URL, Winger will simply create a duplicate tab.
 - **Group Collisions:**
   - `StashProp.Tab.postOpen` -> `Groups.restore` collects the stored `protoGroup` metadata from the bookmarks being unstashed.
-  - It relies on the *old* `groupId` (saved in the bookmark's JSON metadata) to figure out which tabs belong together.
-  - It then calls `browser.tabs.group({ tabIds: [...] })`.
-  - Even if the active window already has a group with the exact same name and color, Firefox's API treats `browser.tabs.group()` (when no `groupId` is provided in the options, as is the case here since we only provide `tabIds` and `createProperties: { windowId }`) as a command to create a *brand new group*.
-  - Therefore, unstashing a group into a window that *already has* an identical group will result in two separate groups with the same name and color.
+  - It relies on the *old* `groupId` (saved in the bookmark's JSON metadata) to figure out which tabs belong together so it can group them in a single API call.
+  - It then calls `browser.tabs.group({ tabIds: [...] })` *without* passing a `groupId`.
+  - According to MDN documentation, passing a `groupId` to `browser.tabs.group` will add the tabs to that existing group. However, since the stashed `groupId` is old, there is no guarantee that a group with that ID still exists—or worse, the ID might now belong to an entirely different group in an unfocused window.
+  - Because no `groupId` is provided to the API call, Firefox natively creates a *brand new group* in the destination window and Winger subsequently updates it with the stashed color and title.
+  - Therefore, unstashing a group into a window that *already has* a group with the exact same name and color will result in two separate groups with identical visual properties.
 
 **Conclusion for Phase 1:**
-For now, the simplest approach is to accept this behavior: "Unstash here" will safely create duplicate tabs and duplicate groups without overwriting or interfering with the existing tabs/groups in the active window. Future iterations (or Phase 2) could involve investigating a more intelligent "merge" strategy if the user desires to deduplicate tabs or merge into existing groups.
+For the MVP, this behavior is perfectly fine. "Unstash here" will safely create duplicate tabs and duplicate groups without overwriting or interfering with the existing tabs/groups in the active window. Future iterations could involve investigating a more intelligent "merge" strategy if the user desires to deduplicate tabs or merge into existing groups.
 
 ### 4. API & Extension Requirements
 
