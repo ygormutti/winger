@@ -44,12 +44,28 @@ Right now, `unstashFolder` in `background/stash.unstash.js` reads a folder, crea
   2. Open these tabs in the *current* active window (instead of calling `browser.windows.create()`).
   3. Let the existing restore algorithm handle grouping: since the bookmarks contain group metadata in their titles, the existing logic (`StashProp.Tab.postOpen`) will automatically parse it and use `browser.tabs.group` and `browser.tabGroups.update` to recreate the groups natively in the current window.
 
-### 3. API & Extension Requirements
+### 3. Edge Cases in the "Unstash Here" Flow
+
+An important consideration when moving from "Unstash to new window" to "Unstash here" is how the existing `unstashFolder` algorithm handles tab duplication and group collisions in the active window.
+
+**Current Unstash Algorithm Behavior:**
+- **Tab Identity:** Winger does not currently check for "identity" (e.g., matching URLs or existing tabs) when unstashing. It blindly iterates through the folder's bookmarks and creates a *new tab* for each bookmark via `browser.tabs.create`. Thus, if the active window already has a tab open with the same URL, Winger will simply create a duplicate tab.
+- **Group Collisions:**
+  - `StashProp.Tab.postOpen` -> `Groups.restore` collects the stored `protoGroup` metadata from the bookmarks being unstashed.
+  - It relies on the *old* `groupId` (saved in the bookmark's JSON metadata) to figure out which tabs belong together.
+  - It then calls `browser.tabs.group({ tabIds: [...] })`.
+  - Even if the active window already has a group with the exact same name and color, Firefox's API treats `browser.tabs.group()` (when no `groupId` is provided in the options, as is the case here since we only provide `tabIds` and `createProperties: { windowId }`) as a command to create a *brand new group*.
+  - Therefore, unstashing a group into a window that *already has* an identical group will result in two separate groups with the same name and color.
+
+**Conclusion for Phase 1:**
+For now, the simplest approach is to accept this behavior: "Unstash here" will safely create duplicate tabs and duplicate groups without overwriting or interfering with the existing tabs/groups in the active window. Future iterations (or Phase 2) could involve investigating a more intelligent "merge" strategy if the user desires to deduplicate tabs or merge into existing groups.
+
+### 4. API & Extension Requirements
 
 - **Permissions**: Winger already declares the `"tabGroups"` permission in `manifest.json`.
 - **Commands & Shorthands**:
   - Add an "Unstash here" action button (with a new icon, e.g., `icons/unstash-here.svg`) in the popup UI for stashed rows (`Template.$folder` in `popup/row.js`).
-  - Add a `/unstashhere` command in `popup/omnibox.js` to unstash the currently targeted row into the active window.
+  - Add a `/unstashhere` (or `/uh`) command in `popup/omnibox.js` to unstash the currently targeted row into the active window.
 
 ---
 
