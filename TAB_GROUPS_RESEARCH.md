@@ -61,7 +61,7 @@ An important consideration when moving from "Unstash to new window" to "Unstash 
   - Therefore, unstashing a group into a window that *already has* a group with the exact same name and color will result in two separate groups with identical visual properties.
 
 **Conclusion for Phase 1:**
-For the MVP, this behavior is perfectly fine. "Unstash here" will safely create duplicate tabs and duplicate groups without overwriting or interfering with the existing tabs/groups in the active window. Future iterations could involve investigating a more intelligent "merge" strategy if the user desires to deduplicate tabs or merge into existing groups.
+For the MVP, this behavior is perfectly fine. "Unstash here" will safely create duplicate tabs and duplicate groups without overwriting or interfering with the existing tabs/groups in the active window. Future iterations could involve investigating a more intelligent "merge" strategy if the user desires to deduplicate tabs or merge into existing groups. For example, if a group with the same `groupId`, `name`, and `color` already exists in the current window, Winger could pass this `groupId` to the `browser.tabs.group` method to merge them; otherwise, it would create a new group as usual.
 
 ### 4. API & Extension Requirements
 
