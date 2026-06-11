@@ -6,7 +6,7 @@ These tasks involve adding the "Unstash Here" button to the UI of stashed folder
 
 ### Task 1: Create Icon
 1. Copy `icons/unstash.svg` to `icons/unstash-here.svg`.
-2. Modify `unstash-here.svg` to visually indicate "unstash to current window" instead of "unstash to new window". For example, change the outer rectangle to represent the current window, or modify the arrow path to distinguish it clearly from the regular unstash icon.
+2. Modify the pre-existing unstash icon (`unstash-here.svg`) by adding a plus sign centered inside the white rounded rectangle.
 
 ### Task 2: Add Button to HTML Template
 1. Open `popup/popup.html`.
