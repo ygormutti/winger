@@ -9,21 +9,21 @@ This document outlines the high-level implementation plan for the Phase 1 featur
 The work has been categorized into four distinct areas, detailed in their respective task markdown files within the `changes/stash-groups/tasks/` directory. These tasks are designed to be completed by a junior programmer or autonomous agent.
 
 ### 1. Settings (`tasks/Settings.md`)
-- Add the `stash_groups_as_folders` setting to the extension's default storage and settings UI (in `storage.js` and `page/settings.html`).
+- Add the `stash_groups_as_folders` (off by default) setting to the extension's default storage and settings UI (in `storage.js` and `page/settings.html`).
 
 ### 2. UI (`tasks/UI.md`)
 - Create a new "Unstash Here" button alongside the standard "Unstash" button in the popup row templates (`popup/popup.html`, `popup/row.js`).
-- Add the corresponding SVG icon (`icons/unstash-here.svg`).
-- Ensure the button is properly hidden/shown for stashed items in `popup/popup.css`.
+- Duplicate the current unstash icon and name it (`icons/unstash-here.svg`). Modify the pre-existing unstash icon by adding a plus sign centered inside the white rounded rectangle.
+- Ensure the button is properly shown only for stashed items in `popup/popup.css`.
 
 ### 3. Stash & Unstash Logic (`tasks/Stash.md`)
 - **Stash**: Modify `stashWindow` and `runStashTasks` in `background/stash.stash.js` to read the new setting. If true, partition tabs by group and stash them into separate folders in the Stash Home.
-- **Unstash Here**: Refactor the existing unstash logic (`background/stash.unstash.js`) to support unstashing directly to the active window. Introduce a `toNewWindow` parameter (defaulting to `true`) and allow the popup request to pass `false` when triggered by the new button. Route the popup UI actions to these background scripts.
+- **Unstash Here**: Refactor the existing unstash logic (`background/stash.unstash.js`) to support unstashing directly to the active window. Introduce a `toNewWindow` parameter (defaulting to `true`) and allow the popup request to pass `false` when triggered by the new button. Route the new popup UI actions to these background scripts.
 
 ### 4. Documentation & Testing (`tasks/DocsAndTesting.md`)
 - As Winger has no automated test suite, create clear manual verification instructions to test the new functionality.
 - Update `README.md` or any relevant help documentation to describe the new settings and buttons.
 
 ## Important Notes for Implementation
-- Ensure there are no slash commands or shorthands created for the new "Unstash here" functionality (unlike the standard unstash which doesn't have them either).
+- Ensure there are no slash commands or shorthands created for the new "Unstash here" functionality (the standard unstash doesn't have them either).
 - Do not touch Phase 2 requirements (e.g. nested tab group UI in popup). Edge cases regarding duplicate groups/tabs on unstash are acceptable for this MVP.
