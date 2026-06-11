@@ -6,14 +6,14 @@ These tasks involve adding the "Unstash Here" button to the UI of stashed folder
 
 ### Task 1: Create Icon
 1. Copy `icons/unstash.svg` to `icons/unstash-here.svg`.
-2. Modify the pre-existing unstash icon (`unstash-here.svg`) by adding a plus sign centered inside the white rounded rectangle.
+2. Modify the pre-existing unstash icon (`unstash.svg`) by adding a plus sign centered inside the white rounded rectangle.
 
 ### Task 2: Add Button to HTML Template
 1. Open `popup/popup.html`.
 2. Locate the `<window-row id="currentWindowRow">` and `<window-row id="newWindowRow">` elements.
 3. Next to the existing `<button class="stash tabAction" ...>` (which functions as the unstash button when the row is a stashed item), add a new button for "Unstash here".
    - Example: `<button class="unstashHere tabAction" title="Unstash here" disabled><img src="../icons/unstash-here.svg"></button>`.
-4. Hide it or handle it appropriately so it doesn't appear on non-stashed items.
+
 
 ### Task 3: Handle the Button in Row Hydration
 1. Open `popup/row.js`.
