@@ -10,23 +10,23 @@ These tasks involve adding the "Unstash Here" button to the UI of stashed folder
 
 ### Task 2: Add Button to HTML Template
 1. Open `popup/popup.html`.
-2. Locate the `<window-row id="currentWindowRow">` and `<window-row id="newWindowRow">` elements.
-3. Next to the existing `<button class="stash tabAction" ...>` (which functions as the unstash button when the row is a stashed item), add a new button for "Unstash here".
-   - Example: `<button class="unstashHere tabAction" title="Unstash here" disabled><img src="../icons/unstash-here.svg"></button>`.
-
+2. Locate the `<window-row id="currentWindowRow">` element.
+3. Next to the existing `<button class="windowAction stash" ...>` add a new button for "Unstash here". We only add it here because `Template.$folder` is cloned from `Template.$window` (which comes from `currentWindowRow`).
+   - Example: `<button class="unstashHere tabAction" title="Unstash here" hidden><img src="../icons/unstash-here.svg"></button>`.
 
 ### Task 3: Handle the Button in Row Hydration
 1. Open `popup/row.js`.
 2. Add `.unstashHere` to the `CELL_SELECTORS` set.
-3. In `FolderRow.init()`, ensure the `.unstashHere` button is properly hydrated for stashed rows. Since it's a `tabAction` in the template, you might need to ensure its disabled state is managed correctly (or just remove the disabled attribute for folder rows, similar to how `.stash` is handled).
-4. For non-stashed rows (`WindowRow.init()`), the `.unstashHere` button should be removed from the DOM entirely so it doesn't show up on active windows.
+3. In `FolderRow.init()`, ensure the `.unstashHere` button is configured for stashed rows. Set the title to "Unstash Here" and explicitly remove the hidden/disabled attributes (using logic similar to how `.stash` is handled, e.g., removing it from `disableElement` or explicitly managing its state).
+4. For non-stashed rows (`WindowRow.init()`), the `.unstashHere` button will be removed from the DOM automatically if not handled differently, or should be explicitly removed if it isn't part of the standard `CELL_SELECTORS` cleanup.
 
 ### Task 4: CSS Updates
 1. Open `popup/popup.css`.
-2. Add necessary styles for `.unstashHere`. You will likely want to tie its visibility to the `.stashed` class, similar to `.stash`, so that it only shows up for stashed items.
+2. Add necessary styles for `.unstashHere`. Tie its icon visibility to the `.stashed` class, similar to `.stash`, so that it follows codebase conventions.
 3. Example:
    ```css
-   window-row:not(.stashed) .unstashHere {
-       display: none;
+   window-row.stashed & {
+       background-image: url("../icons/unstash-here.svg");
    }
    ```
+   (Note: Adjust the exact nesting based on where `.unstashHere` is placed relative to `window-row` in `popup.css`).

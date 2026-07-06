@@ -2,7 +2,7 @@
 
 These tasks involve adding the `stash_groups_as_folders` setting so users can opt-in to the new group stashing behavior.
 
-**Prerequisites**: Familiarity with `storage.js` and `page/settings.html`.
+**Prerequisites**: Familiarity with `storage.js` and `page/options.html`.
 
 ### Task 1: Update Storage Defaults
 1. Open `storage.js`.
@@ -11,12 +11,12 @@ These tasks involve adding the `stash_groups_as_folders` setting so users can op
 4. Ensure it follows the existing codebase conventions (lower_snake_case for settings).
 
 ### Task 2: Update Settings Page UI
-1. Open `page/settings.html`.
+1. Open `page/options.html`.
 2. Find the `<fieldset>` block for Stash settings (usually identifiable by legends or existing options like `stash_nameless_with_title`).
 3. Add a new checkbox for this setting:
    ```html
    <label>
-       <input type="checkbox" id="stash_groups_as_folders">
+       <input class="setting" type="checkbox" data-enabled-by="enable_stash" name="stash_groups_as_folders">
        Stash tab groups as separate folders
    </label>
    ```
