@@ -38,7 +38,7 @@ Since Tab Groups are not yet surfaced as addressable rows in the UI, we cannot d
 Right now, `unstashFolder` in `background/stash.unstash.js` reads a folder, creates a new Window (using any encoded `ProtoWindow` properties), and opens the bookmarks in that new window. Group metadata is parsed from the bookmark titles to recreate the groups.
 
 **Proposed Changes:**
-- **Trigger**: The user clicks a new "Unstash here" icon button on a stashed folder row, or uses a modified command (e.g., `/unstashhere` or a shift-modifier combination).
+- **Trigger**: The user clicks a new "Unstash here" icon button on a stashed folder row, .
 - **Unstash Mechanics**: We modify `unstashFolder` (or add an `unstashHere` function) to:
   1. Retrieve the tabs (bookmarks) in the folder.
   2. Open these tabs in the *current* active window (instead of calling `browser.windows.create()`).
@@ -68,7 +68,6 @@ For the MVP, this behavior is perfectly fine. "Unstash here" will safely create 
 - **Permissions**: Winger already declares the `"tabGroups"` permission in `manifest.json`.
 - **Commands & Shorthands**:
   - Add an "Unstash here" action button (with a new icon, e.g., `icons/unstash-here.svg`) in the popup UI for stashed rows (`Template.$folder` in `popup/row.js`).
-  - Add a `/unstashhere` (or `/uh`) command in `popup/omnibox.js` to unstash the currently targeted row into the active window.
 
 ---
 
